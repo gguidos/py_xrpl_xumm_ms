@@ -1,4 +1,4 @@
-# XRPL-Based Second-Hand Marketplace Service
+# XRPL-XUMM Service
 
 This is a microservice designed for a decentralized application (dApp) for second-hand product listings using the XRP Ledger (XRPL) for payments and NFTs as authenticity tokens. This service integrates with RabbitMQ for event-driven messaging, Xumm for user authentication, and MongoDB for data persistence.
 
