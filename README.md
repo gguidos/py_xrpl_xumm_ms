@@ -1,230 +1,149 @@
-# Microservice Boilerplate with FastAPI, MongoDB, and Dependency Injection
+# XRPL-Based Second-Hand Marketplace Service
 
-Welcome to the Microservice Boilerplate repository! This project is a robust and modular backend service built using **FastAPI**, **MongoDB**, and **Dependency Injector**. It is designed to help you quickly get started with building microservices by providing a well-structured and extendable codebase.
+This is a microservice designed for a decentralized application (dApp) for second-hand product listings using the XRP Ledger (XRPL) for payments and NFTs as authenticity tokens. This service integrates with RabbitMQ for event-driven messaging, Xumm for user authentication, and MongoDB for data persistence.
 
 ## Table of Contents
+- [Overview](#overview)
 - [Features](#features)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Environment Setup](#environment-setup)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Configuration](#configuration)
 - [Running the Application](#running-the-application)
-  - [Local Development](#local-development)
-  - [Using Docker](#using-docker)
-- [Endpoints](#endpoints)
+- [API Endpoints](#api-endpoints)
 - [Testing](#testing)
-- [Security and Rate Limiting](#security-and-rate-limiting)
-- [Metrics, Monitoring, and Health Checks](#metrics-monitoring-and-health-checks)
-- [Contributing](#contributing)
-- [License](#license)
+- [Metrics and Monitoring](#metrics-and-monitoring)
+- [Ngrok Setup](#ngrok-setup)
+
+## Overview
+
+This service provides the backend for a second-hand marketplace, handling functionalities like user authentication using Xumm, managing payments on the XRPL, and communicating via RabbitMQ. The service uses FastAPI for building the REST API and Dependency Injection for modular and scalable components.
 
 ## Features
+- **User Authentication**: Using the Xumm wallet for secure XRPL-based authentication.
+- **Payments and NFTs**: Management of XRPL payments and creation of NFTs for second-hand products.
+- **Event-Driven Messaging**: Integration with RabbitMQ for asynchronous communication.
+- **Persistence**: MongoDB for storing user and product information.
+- **Prometheus Monitoring**: Metrics endpoint to monitor the health and performance of the service.
 
-- **FastAPI** framework for creating performant APIs.
-- **MongoDB** integration using `motor` for asynchronous operations.
-- **Dependency Injection** with `dependency-injector` for modular and maintainable code.
-- **Request/Response Validation** using Pydantic models.
-- **Custom Middleware** for request tracking (e.g., Request ID).
-- **Unified Logging** configuration with support for JSON and file-based logging.
-- **Input Sanitization** for preventing XSS and SQL Injection attacks.
-- **Global Exception Handling** with a standardized error response format.
-- **Rate Limiting** to prevent abuse of the endpoints.
-- **Security Headers** such as `Strict-Transport-Security` and `Content-Security-Policy`.
-- **API Key Management** for securing the service.
-- **Health Checks and Readiness Probes**.
-- **Metrics and Monitoring** with Prometheus.
-- **Structured Project Layout** following the Clean Architecture principles.
-- **Dynamic Configuration** using environment variables with `dotenv`.
+## Architecture
 
-## Project Structure
+The project follows a layered architecture to ensure separation of concerns:
+- **Core**: Contains the main business logic and use cases.
+- **Infrastructure**: Handles external dependencies such as database clients, RabbitMQ, and XRPL.
+- **Interfaces**: Defines the API endpoints for interacting with the service.
+- **Services**: Encapsulates various services such as XRPL, RabbitMQ, and Xumm, using the repository pattern.
 
-```bash
+### Project Structure
+```
 .
 ├── Dockerfile
 ├── README.md
+├── alerts.yml
 ├── docker-compose.yml
 ├── logs
-│   ├── application.log
-│   └── errors.log
 ├── post.http
+├── prometheus.yml
 ├── requirements.txt
 ├── src
-│   ├── core
-│   │   ├── entities
-│   │   │   ├── base_entity.py
-│   │   │   └── user.py
-│   │   ├── repositories
-│   │   │   └── user_repository.py
-│   │   ├── schemas
-│   │   │   └── user_schema.py
-│   │   └── use_cases
-│   │       ├── create_user.py
-│   │       ├── get_all_users.py
-│   │       └── get_user.py
-│   ├── dependencies
-│   │   ├── api_key_dependency.py
-│   │   ├── request_id_dependency.py
-│   │   └── user_service_dependency.py
-│   ├── infrastructure
-│   │   ├── db
-│   │   │   └── mongo_client.py
-│   │   ├── di_container.py
-│   │   ├── exception_handlers.py
-│   │   └── logging
-│   │       └── logging_config.py
-│   ├── interfaces
-│   │   └── api
-│   │       └── v1
-│   │           ├── health_check.py
-│   │           └── user_controller.py
-│   ├── main.py
-│   ├── middleware
-│   │   ├── logging_middleware.py
-│   │   ├── request_id_middleware.py
-│   │   ├── response_interceptor.py
-│   │   └── security_headers.py
-│   └── services
-│       └── user_service.py
-└── structure.txt
-
-17 directories, 30 files
+│   ├── core
+│   │   ├── entities
+│   │   ├── repositories
+│   │   ├── schemas
+│   │   └── use_cases
+│   ├── dependencies
+│   ├── infrastructure
+│   ├── interfaces
+│   │   └── api
+│   ├── main.py
+│   ├── middleware
+│   └── services
+└── tests
 ```
 
-## Getting Started
+## Installation
 
-### Prerequisites
+To run this service locally, follow these steps:
 
-Make sure you have the following installed on your system:
+1. **Clone the Repository**
+   ```sh
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
 
-- Python 3.8 or higher
-- MongoDB 4.0 or higher
-- Docker (optional, for running via Docker)
+2. **Install Dependencies**
+   Use the `requirements.txt` file to install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-### Installation
+3. **Set Up Environment Variables**
+   Create a `.env` file with necessary configurations such as database URIs, RabbitMQ host, XRPL URL, Xumm API keys, etc.
 
-1. **Clone the repository:**
+## Configuration
 
-    ```bash
-    git clone https://github.com/your-username/your-repo-name.git
-    cd your-repo-name
-    ```
-
-2. **Create a virtual environment and activate it:**
-
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
-
-3. **Install the dependencies:**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. **Install MongoDB locally** or ensure a remote instance is accessible.
-
-### Environment Setup
-
-1. **Create a `.env` file** in the root of the project and set up the following environment variables:
-
-    ```ini
-    MONGO_URI=mongodb://localhost:27017
-    DB_NAME=mydatabase
-    DB_COLLECTION=users
-    LOG_LEVEL=DEBUG
-    ENVIRONMENT=development
-    API_KEY=your-api-key-for-secure-access
-    ```
-
-2. **Modify the `.env` file** according to your local or production configurations.
+- **Docker**: The `Dockerfile` and `docker-compose.yml` files are provided to containerize and orchestrate the services.
+- **Prometheus**: Metrics are configured using `prometheus.yml` and can be monitored for application health.
+- **Alerts**: The `alerts.yml` file defines alerting rules for important metrics.
 
 ## Running the Application
 
-### Local Development
-
-1. **Start MongoDB server** if running locally:
-
-    ```bash
-    mongod
-    ```
-
-2. **Run the application:**
-
-    ```bash
-    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    ```
-
-3. The API will be available at `http://127.0.0.1:8000`.
-
-### Using Docker
-
-1. **Build the Docker image:**
-
-    ```bash
-    docker build -t my-microservice .
-    ```
-
-2. **Run the Docker container:**
-
-    ```bash
-    docker run -p 8000:8000 --env-file .env my-microservice
-    ```
-
-## Endpoints
-
-Here are some key endpoints provided by this boilerplate:
-
-- `GET /api/v1/users/`: Retrieve all users.
-- `POST /api/v1/users/`: Create a new user.
-- `GET /api/v1/users/id/{user_id}`: Retrieve a user by ID.
-- `GET /api/v1/users/email/{email}`: Retrieve a user by email.
-- `GET /internal/metrics`: Prometheus metrics endpoint.
-- `GET /api/v1/health`: Health endpoint.
-- `GET /api/v1/readiness`: Readiness endpoint.
-
-### Sample Request to Create a User
-
-```json
-POST /api/v1/users/
-{
-  "name": "John Doe",
-  "email": "john.doe@example.com",
-  "age": 30
-}
+### Using Docker Compose
+To run the service with Docker Compose:
+```sh
+docker-compose up --build
 ```
 
-### Response Format
-```json
-{
-  "status": "success",
-  "data": { ... },
-  "message": "Operation completed successfully."
-}
+### Running Locally
+Make sure RabbitMQ, MongoDB, and Redis are running and then start the service:
+```sh
+uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## Security and Rate Limiting
+## API Endpoints
 
-- `API Key Management`: An X-API-Key header is used for validating access to secure endpoints. The key is defined in the .env file.
+### Health Check
+- **GET `/api/v1/health`**: Checks the health of the service.
 
-- `Rate Limiting`: Middleware to limit the number of requests a client can make in a defined time window. See rate_limiting_middleware.py.
+### XRPL Authentication
+- **GET `/api/v1/xumm/auth/`**: Initiates user authentication using Xumm.
+- **POST `/api/v1/xumm/webhook`**: Receives Xumm webhook callback for authentication completion.
 
-- `Security Headers`: Content-Security-Policy, Strict-Transport-Security, and X-Content-Type-Options headers are added using the security_config.py.
-
-## Metrics, Monitoring, and Health Checks
-
-- `Prometheus Metrics`: /internal/metrics endpoint provides real-time metrics. See metrics.py.
-
-- `Health Checks`: /api/v1/health endpoint provides application health status.
-
-- `Readiness Checks`: /api/v1/readiness endpoint provides database health status.
-
-- `Monitoring & Alerting`: Use Prometheus and Alertmanager for monitoring and alerting setups.
+### User Account Management
+- **GET `/api/v1/xrpl/account/`**: Retrieves account information from XRPL.
 
 ## Testing
-To run the tests, make sure you have pytest installed:
 
-```bash
-pytest
+Unit tests are available in the `tests` directory. To run the tests:
+```sh
+pytest tests/
 ```
+
+## Metrics and Monitoring
+- **Prometheus Metrics**: Expose metrics via `/metrics` endpoint to monitor the health and performance.
+- **Logs**: Application logs are stored in the `logs` directory.
+
+To enable monitoring and alerts, configure Prometheus using the `prometheus.yml` and start it using Docker Compose along with the application.
+
+## Ngrok Setup
+
+To test the Xumm webhook locally, you can use [Ngrok](https://ngrok.com/) to expose your local server to the internet. This is useful for receiving callbacks from Xumm.
+
+### Steps to Set Up Ngrok
+
+1. **Install Ngrok**
+   Download and install Ngrok from [https://ngrok.com/download](https://ngrok.com/download).
+
+2. **Start Ngrok**
+   Run Ngrok to expose your local server. For example, if your service is running on port 8000:
+   ```sh
+   ngrok http 8000
+   ```
+
+3. **Update Webhook URL**
+   Use the generated Ngrok URL (e.g., `https://<random-string>.ngrok.io`) and update the Xumm webhook URL to point to `https://<random-string>.ngrok.io/api/v1/xumm/webhook`.
+
+Ngrok allows Xumm to send webhook callbacks to your local machine, enabling you to test the authentication flow end-to-end.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for more details.

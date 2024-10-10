@@ -1,0 +1,67 @@
+.
+├── Dockerfile
+├── README.md
+├── alerts.yml
+├── docker-compose.yml
+├── logs
+├── post.http
+├── project_structure.txt
+├── prometheus.yml
+├── requirements.txt
+├── src
+│   ├── core
+│   │   ├── entities
+│   │   │   └── base_entity.py
+│   │   ├── repositories
+│   │   │   ├── db_repository.py
+│   │   │   ├── rabbitmq_repository.py
+│   │   │   ├── xrpl_repository.py
+│   │   │   └── xumm_repository.py
+│   │   ├── schemas
+│   │   └── use_cases
+│   │       ├── authenticate.py
+│   │       ├── get_account.py
+│   │       └── rabbitmq
+│   │           └── publish_authentication_message.py
+│   ├── dependencies
+│   │   ├── api_key_dependency.py
+│   │   ├── rabbitmq_service_dependency.py
+│   │   ├── request_id_dependency.py
+│   │   ├── xrpl_service_dependency.py
+│   │   └── xumm_service_dependency.py
+│   ├── infrastructure
+│   │   ├── db
+│   │   │   ├── mongo_client.py
+│   │   │   └── redis_client.py
+│   │   ├── di_container.py
+│   │   ├── exception_handlers.py
+│   │   ├── logging
+│   │   │   └── logging_config.py
+│   │   ├── metrics.py
+│   │   ├── pika.py
+│   │   ├── xrpl.py
+│   │   └── xumm.py
+│   ├── interfaces
+│   │   └── api
+│   │       └── v1
+│   │           ├── health_check.py
+│   │           ├── xrpl_controller.py
+│   │           └── xumm_controller.py
+│   ├── main.py
+│   ├── middleware
+│   │   ├── logging_middleware.py
+│   │   ├── request_id_middleware.py
+│   │   ├── response_interceptor.py
+│   │   └── security_headers.py
+│   └── services
+│       ├── rabbitmq_service.py
+│       ├── xrpl_service.py
+│       └── xumm_service.py
+├── structure.txt
+└── tests
+    ├── __init__.py
+    ├── conftest.py
+    ├── test_user_controller.py
+    └── test_user_service.py
+
+19 directories, 46 files

@@ -16,3 +16,4 @@ redis
 setuptools
 uvicorn
 xrpl-py
+xumm-sdk-py
